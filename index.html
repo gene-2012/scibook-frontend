@@ -1,849 +1,1260 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SciBook Demo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="marked.js"></script>
-<style>
-:root {
-  --lime:   #c8f135;
-  --coral:  #ff5c5c;
-  --sky:    #5ce1ff;
-  --ink:    #0e0e12;
-  --paper:  #f5f2eb;
-  --muted:  #8a8794;
-  --border: #e2ddd4;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SciBook Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script src="marked.js"></script>
+  <style>
+    :root {
+      --lime: #c8f135;
+      --coral: #ff5c5c;
+      --sky: #5ce1ff;
+      --ink: #0e0e12;
+      --paper: #f5f2eb;
+      --muted: #8a8794;
+      --border: #e2ddd4;
+    }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--paper);
-  color: var(--ink);
-  display: flex;
-  flex-direction: column;
-}
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
 
-/* ── TOPBAR ── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  height: 56px;
-  background: var(--ink);
-  flex-shrink: 0;
-  z-index: 10;
-}
-.topbar-left { display: flex; align-items: center; gap: 14px; }
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 1rem;
-  color: #fff;
-  letter-spacing: -0.01em;
-}
-.logo span {
-  display: inline-block;
-  background: var(--lime);
-  color: var(--ink);
-  padding: 1px 7px;
-  border-radius: 4px;
-  margin-right: 6px;
-  font-size: 0.72rem;
-  letter-spacing: 0.07em;
-  font-weight: 700;
-  vertical-align: middle;
-  font-family: 'DM Mono', monospace;
-}
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+    }
 
-.topbar-right { display: flex; align-items: center; gap: 20px; }
-.nav-link {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: #666;
-  text-decoration: none;
-  letter-spacing: 0.04em;
-  transition: color 0.15s;
-  cursor: pointer;
-  background: none;
-  border: none;
-  font-family: 'DM Sans', sans-serif;
-  padding: 0;
-}
-.nav-link:hover { color: #fff; }
-.nav-link-dialogue {
-  color: var(--coral) !important;
-  border: 1px solid #ff5c5c44;
-  padding: 4px 12px;
-  border-radius: 6px;
-  transition: background 0.15s, border-color 0.15s !important;
-}
-.nav-link-dialogue:hover {
-  background: #ff5c5c18;
-  border-color: var(--coral);
-  color: var(--coral) !important;
-}
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      height: 52px;
+      background: var(--ink);
+      flex-shrink: 0;
+      z-index: 10;
+    }
 
-/* ── WORKSPACE ── */
-.workspace {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
 
-.panel { display: flex; flex-direction: column; overflow: hidden; }
-.panel-left  { width: 52%; min-width: 260px; }
-.panel-right { flex: 1; min-width: 260px; }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #fff;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
 
-/* ── PANEL HEADERS ── */
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 9px 20px;
-  background: var(--ink);
-  border-bottom: 1px solid #222;
-  flex-shrink: 0;
-}
-.panel-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.panel-left  .panel-label { color: var(--lime); }
-.panel-right .panel-label { color: var(--sky);  }
-.panel-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.64rem;
-  color: #444;
-  letter-spacing: 0.05em;
-}
+    .logo span {
+      display: inline-block;
+      background: var(--lime);
+      color: var(--ink);
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin-right: 6px;
+      font-size: 0.72rem;
+      letter-spacing: 0.07em;
+      font-weight: 700;
+      vertical-align: middle;
+      font-family: 'DM Mono', monospace;
+    }
 
-/* ── PDF ── */
-.pdf-body { flex: 1; overflow: hidden; background: #2a2a2a; position: relative; }
-.pdf-body::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 14px;
-  background: linear-gradient(to bottom, #1a1a1a55, transparent);
-  z-index: 2;
-  pointer-events: none;
-}
-iframe { width: 100%; height: 100%; border: none; display: block; }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
 
-/* ── DIVIDER ── */
-.divider {
-  width: 4px;
-  background: #1c1c1c;
-  cursor: col-resize;
-  flex-shrink: 0;
-  position: relative;
-  transition: background 0.18s;
-}
-.divider::after {
-  content: '⋮';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  color: #3a3a3a;
-  font-size: 13px;
-  pointer-events: none;
-}
-.divider:hover, .divider.active { background: var(--lime); }
-.divider:hover::after, .divider.active::after { color: var(--ink); }
+    .nav-link {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #666;
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.15s;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      padding: 0;
+      white-space: nowrap;
+    }
 
-/* ── MARKDOWN BODY ── */
-.md-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 36px 44px 60px;
-  background: var(--paper);
-  scroll-behavior: smooth;
-}
-.md-body::-webkit-scrollbar { width: 5px; }
-.md-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-.md-body::-webkit-scrollbar-thumb:hover { background: #ccc; }
+    .nav-link:hover {
+      color: #fff;
+    }
 
-/* loader */
-.loader {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 200px; gap: 14px;
-}
-.loader-ring {
-  width: 32px; height: 32px;
-  border: 3px solid var(--border);
-  border-top-color: var(--coral);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loader p { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.04em; }
+    .nav-link-dialogue {
+      color: var(--coral) !important;
+      border: 1px solid #ff5c5c44;
+      padding: 4px 12px;
+      border-radius: 6px;
+      transition: background 0.15s, border-color 0.15s !important;
+    }
 
-/* ── MARKDOWN TYPOGRAPHY ── */
-#md-out {
-  max-width: 660px;
-  margin: 0 auto;
-  animation: fadeUp 0.38s ease both;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+    .nav-link-dialogue:hover {
+      background: #ff5c5c18;
+      border-color: var(--coral);
+    }
 
-#md-out::before {
-  content: 'result.md';
-  display: block;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.64rem;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-}
+    /* mobile tab bar (hidden on desktop) */
+    .tab-bar {
+      display: none;
+      background: var(--ink);
+      border-top: 1px solid #222;
+      flex-shrink: 0;
+    }
 
-#md-out h1 {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 2.1rem;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  color: var(--ink);
-  margin-bottom: 0.5em;
-}
-#md-out h1::after {
-  content: '';
-  display: block;
-  width: 40px; height: 4px;
-  background: var(--coral);
-  border-radius: 2px;
-  margin-top: 10px;
-}
+    .tab-bar button {
+      flex: 1;
+      padding: 10px 0;
+      background: none;
+      border: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #555;
+      cursor: pointer;
+      transition: color 0.15s, border-bottom 0.15s;
+      border-bottom: 2px solid transparent;
+    }
 
-#md-out h2 {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-  margin: 2.2em 0 0.7em;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-#md-out h2::before {
-  content: '';
-  display: inline-block;
-  width: 8px; height: 8px;
-  background: var(--lime);
-  border-radius: 2px;
-  flex-shrink: 0;
-}
+    .tab-bar button.active {
+      color: var(--lime);
+      border-bottom-color: var(--lime);
+    }
 
-#md-out h3 {
-  font-family: 'Syne', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  color: #333;
-  margin: 1.6em 0 0.5em;
-}
+    .tab-bar button.tab-mag.active {
+      color: var(--sky);
+      border-bottom-color: var(--sky);
+    }
 
-#md-out p {
-  font-size: 0.95rem;
-  line-height: 1.85;
-  color: #3a3740;
-  margin-bottom: 1.1em;
-  font-weight: 300;
-}
+    /* ── WORKSPACE ── */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
 
-#md-out strong { color: var(--ink); font-weight: 600; }
-#md-out em { color: #5a5770; font-style: italic; }
+    .panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-#md-out a {
-  color: var(--coral);
-  text-decoration: none;
-  border-bottom: 1px solid #ff5c5c55;
-  transition: border-color 0.15s;
-}
-#md-out a:hover { border-color: var(--coral); }
+    .panel-left {
+      width: 52%;
+      min-width: 260px;
+    }
 
-#md-out code {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.82em;
-  background: #ede9df;
-  color: #b8393a;
-  padding: 2px 7px;
-  border-radius: 5px;
-}
-#md-out pre {
-  background: var(--ink);
-  border-radius: 10px;
-  padding: 20px 24px;
-  overflow-x: auto;
-  margin: 1.4em 0;
-  position: relative;
-}
-#md-out pre::before {
-  content: 'code';
-  position: absolute;
-  top: 10px; right: 14px;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  color: #444;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-#md-out pre code {
-  background: none;
-  color: var(--lime);
-  padding: 0;
-  font-size: 0.85rem;
-  line-height: 1.7;
-}
+    .panel-right {
+      flex: 1;
+      min-width: 260px;
+    }
 
-#md-out blockquote {
-  margin: 1.4em 0;
-  padding: 14px 20px;
-  border-left: 3px solid var(--sky);
-  background: #eef8ff;
-  border-radius: 0 8px 8px 0;
-  font-style: italic;
-  color: #4a5070;
-  font-size: 0.93rem;
-  line-height: 1.72;
-}
+    /* ── PANEL HEADERS ── */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 20px;
+      background: var(--ink);
+      border-bottom: 1px solid #222;
+      flex-shrink: 0;
+    }
 
-#md-out ul, #md-out ol {
-  padding-left: 1.4em;
-  margin-bottom: 1.1em;
-  color: #3a3740;
-  font-size: 0.95rem;
-  line-height: 1.8;
-  font-weight: 300;
-}
-#md-out li { margin-bottom: 0.25em; }
-#md-out li::marker { color: var(--coral); }
+    .panel-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
 
-#md-out hr {
-  border: none;
-  border-top: 1px dashed var(--border);
-  margin: 2em 0;
-}
+    .panel-left .panel-label {
+      color: var(--lime);
+    }
 
-#md-out table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.4em 0;
-  font-size: 0.88rem;
-}
-#md-out th {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 0.73rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  background: var(--ink);
-  color: var(--lime);
-  padding: 10px 14px;
-  text-align: left;
-}
-#md-out td {
-  padding: 9px 14px;
-  border-bottom: 1px solid var(--border);
-  color: #3a3740;
-  font-weight: 300;
-}
-#md-out tr:hover td { background: #efebe0; }
-#md-out img {
-  max-width: 100%;
-  border-radius: 10px;
-  margin: 1em 0;
-  box-shadow: 0 4px 20px #0001;
-}
+    .panel-right .panel-label {
+      color: var(--sky);
+    }
 
-/* ── FOOTER ── */
-.footer-strip {
-  background: var(--ink);
-  padding: 6px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-.footer-strip span {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.63rem;
-  color: #444;
-  letter-spacing: 0.06em;
-}
-.dot-row { display: flex; gap: 5px; }
-.dot-row i {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  display: inline-block;
-}
-.dot-row i:nth-child(1) { background: var(--coral); }
-.dot-row i:nth-child(2) { background: var(--lime); }
-.dot-row i:nth-child(3) { background: var(--sky); }
+    .panel-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.64rem;
+      color: #444;
+      letter-spacing: 0.05em;
+    }
 
-/* ── MODAL (shared) ── */
-.modal-bg {
-  display: none;
-  position: fixed; inset: 0;
-  background: #0e0e1288;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-.modal-bg.open { display: flex; }
+    /* ── PDF ── */
+    .pdf-body {
+      flex: 1;
+      overflow: hidden;
+      background: #2a2a2a;
+      position: relative;
+    }
 
-.modal {
-  background: var(--paper);
-  border-radius: 16px;
-  width: 90%;
-  max-width: 560px;
-  box-shadow: 0 32px 80px #0007;
-  position: relative;
-  animation: popIn 0.24s cubic-bezier(0.34,1.56,0.64,1) both;
-  overflow: hidden;
-}
-@keyframes popIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
+    .pdf-body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 14px;
+      background: linear-gradient(to bottom, #1a1a1a55, transparent);
+      z-index: 2;
+      pointer-events: none;
+    }
 
-.modal-top {
-  background: var(--ink);
-  padding: 20px 24px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.modal-top-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-#modal-abstract .modal-top-label { color: var(--lime); }
-#modal-authors  .modal-top-label { color: var(--sky);  }
-#modal-dialogue .modal-top-label { color: var(--coral); }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
 
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: #fff;
-  margin-top: 6px;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-}
+    /* ── DIVIDER ── */
+    .divider {
+      width: 4px;
+      background: #1c1c1c;
+      cursor: col-resize;
+      flex-shrink: 0;
+      position: relative;
+      transition: background 0.18s;
+    }
 
-.modal-close {
-  background: #ffffff18;
-  border: none;
-  color: #aaa;
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s, color 0.15s;
-  flex-shrink: 0;
-  align-self: flex-start;
-}
-.modal-close:hover { background: #ffffff28; color: #fff; }
+    .divider::after {
+      content: '⋮';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #3a3a3a;
+      font-size: 13px;
+      pointer-events: none;
+    }
 
-.modal-body {
-  padding: 24px 28px 28px;
-}
+    .divider:hover,
+    .divider.active {
+      background: var(--lime);
+    }
 
-/* abstract text */
-.modal-abstract-text {
-  font-size: 0.92rem;
-  line-height: 1.85;
-  color: #3a3740;
-  font-weight: 300;
-}
-.modal-abstract-text strong { color: var(--ink); font-weight: 600; }
+    .divider:hover::after,
+    .divider.active::after {
+      color: var(--ink);
+    }
 
-/* authors grid */
-.authors-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.author-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
-  background: #fff;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-.author-card:hover {
-  border-color: #ccc;
-  box-shadow: 0 2px 12px #0000080a;
-}
-.author-avatar {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-  color: var(--ink);
-}
-.author-info { flex: 1; min-width: 0; }
-.author-name {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 0.88rem;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.author-affil {
-  font-size: 0.75rem;
-  color: var(--muted);
-  font-weight: 300;
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.author-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.06em;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: #f0f0f0;
-  color: #888;
-  white-space: nowrap;
-}
+    /* ── MARKDOWN BODY ── */
+    .md-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 44px 60px;
+      background: var(--paper);
+      scroll-behavior: smooth;
+    }
 
-/* ── DIALOGUE MODAL ── */
-#modal-dialogue .modal {
-  max-width: 680px;
-  max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-}
-#modal-dialogue .modal-body {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex: 1;
-  min-height: 0;
-}
+    .md-body::-webkit-scrollbar {
+      width: 5px;
+    }
 
-.dialogue-meta {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  flex-shrink: 0;
-}
-.agent-pill {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-  padding: 3px 10px;
-  border-radius: 20px;
-  border: 1px solid;
-  text-transform: uppercase;
-}
+    .md-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
 
-.dialogue-scroll {
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-right: 4px;
-}
-.dialogue-scroll::-webkit-scrollbar { width: 4px; }
-.dialogue-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .md-body::-webkit-scrollbar-thumb:hover {
+      background: #ccc;
+    }
 
-.turn {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  animation: fadeUp 0.2s ease both;
-}
-.turn-avatar {
-  width: 32px; height: 32px;
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 0.68rem;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.turn-body { flex: 1; min-width: 0; }
-.turn-header {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 5px;
-}
-.turn-agent {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 0.8rem;
-}
-.turn-role {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  color: var(--muted);
-  letter-spacing: 0.05em;
-}
-.turn-text {
-  font-size: 0.88rem;
-  line-height: 1.75;
-  color: #3a3740;
-  font-weight: 300;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 4px 12px 12px 12px;
-  padding: 10px 14px;
-}
-.round-divider {
-  text-align: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  color: #bbb;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  position: relative;
-  margin: 4px 0;
-  flex-shrink: 0;
-}
-.round-divider::before, .round-divider::after {
-  content: '';
-  position: absolute;
-  top: 50%; width: 40%;
-  height: 1px;
-  background: var(--border);
-}
-.round-divider::before { left: 0; }
-.round-divider::after  { right: 0; }
+    /* loader */
+    .loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+      gap: 14px;
+    }
 
-.dialogue-loading {
-  display: flex; align-items: center; justify-content: center;
-  gap: 10px; padding: 40px 0;
-  font-size: 0.8rem; color: var(--muted);
-}
-.dialogue-err {
-  color: var(--coral);
-  font-size: 0.82rem;
-  text-align: center;
-  padding: 30px 0;
-  line-height: 1.8;
-}
-</style>
+    .loader-ring {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--coral);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── MARKDOWN TYPOGRAPHY ── */
+    #md-out {
+      max-width: 660px;
+      margin: 0 auto;
+      animation: fadeUp 0.38s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #md-out::before {
+      content: 'result.md';
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.64rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #md-out h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2.1rem;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 0.5em;
+    }
+
+    #md-out h1::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 4px;
+      background: var(--coral);
+      border-radius: 2px;
+      margin-top: 10px;
+    }
+
+    #md-out h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin: 2.2em 0 0.7em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #md-out h2::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--lime);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    #md-out h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #333;
+      margin: 1.6em 0 0.5em;
+    }
+
+    #md-out p {
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: #3a3740;
+      margin-bottom: 1.1em;
+      font-weight: 300;
+    }
+
+    #md-out strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    #md-out em {
+      color: #5a5770;
+      font-style: italic;
+    }
+
+    #md-out a {
+      color: var(--coral);
+      text-decoration: none;
+      border-bottom: 1px solid #ff5c5c55;
+      transition: border-color 0.15s;
+    }
+
+    #md-out a:hover {
+      border-color: var(--coral);
+    }
+
+    #md-out code {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82em;
+      background: #ede9df;
+      color: #b8393a;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    #md-out pre {
+      background: var(--ink);
+      border-radius: 10px;
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 1.4em 0;
+      position: relative;
+    }
+
+    #md-out pre::before {
+      content: 'code';
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: #444;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    #md-out pre code {
+      background: none;
+      color: var(--lime);
+      padding: 0;
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    #md-out blockquote {
+      margin: 1.4em 0;
+      padding: 14px 20px;
+      border-left: 3px solid var(--sky);
+      background: #eef8ff;
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+      color: #4a5070;
+      font-size: 0.93rem;
+      line-height: 1.72;
+    }
+
+    #md-out ul,
+    #md-out ol {
+      padding-left: 1.4em;
+      margin-bottom: 1.1em;
+      color: #3a3740;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    #md-out li {
+      margin-bottom: 0.25em;
+    }
+
+    #md-out li::marker {
+      color: var(--coral);
+    }
+
+    #md-out hr {
+      border: none;
+      border-top: 1px dashed var(--border);
+      margin: 2em 0;
+    }
+
+    #md-out table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.4em 0;
+      font-size: 0.88rem;
+    }
+
+    #md-out th {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      background: var(--ink);
+      color: var(--lime);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    #md-out td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      color: #3a3740;
+      font-weight: 300;
+    }
+
+    #md-out tr:hover td {
+      background: #efebe0;
+    }
+
+    #md-out img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 1em 0;
+      box-shadow: 0 4px 20px #0001;
+    }
+
+    /* ── FOOTER ── */
+    .footer-strip {
+      background: var(--ink);
+      padding: 6px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .footer-strip span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      color: #444;
+      letter-spacing: 0.06em;
+    }
+
+    .dot-row {
+      display: flex;
+      gap: 5px;
+    }
+
+    .dot-row i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot-row i:nth-child(1) {
+      background: var(--coral);
+    }
+
+    .dot-row i:nth-child(2) {
+      background: var(--lime);
+    }
+
+    .dot-row i:nth-child(3) {
+      background: var(--sky);
+    }
+
+    /* ── MODAL (shared) ── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #0e0e1288;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-bg.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--paper);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 32px 80px #0007;
+      position: relative;
+      animation: popIn 0.24s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      overflow: hidden;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-top {
+      background: var(--ink);
+      padding: 18px 20px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-top-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    #modal-abstract .modal-top-label {
+      color: var(--lime);
+    }
+
+    #modal-authors .modal-top-label {
+      color: var(--sky);
+    }
+
+    #modal-dialogue .modal-top-label {
+      color: var(--coral);
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #fff;
+      margin-top: 5px;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    .modal-close {
+      background: #ffffff18;
+      border: none;
+      color: #aaa;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+
+    .modal-close:hover {
+      background: #ffffff28;
+      color: #fff;
+    }
+
+    .modal-body {
+      padding: 20px 22px 24px;
+    }
+
+    /* abstract */
+    .modal-abstract-text {
+      font-size: 0.92rem;
+      line-height: 1.85;
+      color: #3a3740;
+      font-weight: 300;
+    }
+
+    .modal-abstract-text strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* authors */
+    .authors-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .author-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .author-card:hover {
+      border-color: #ccc;
+      box-shadow: 0 2px 12px #0000080a;
+    }
+
+    .author-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      color: var(--ink);
+    }
+
+    .author-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .author-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .author-affil {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 300;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .author-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: #f0f0f0;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    /* ── DIALOGUE MODAL ── */
+    #modal-dialogue .modal {
+      max-width: 680px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #modal-dialogue .modal-body {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .dialogue-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .agent-pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.06em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+      text-transform: uppercase;
+    }
+
+    .dialogue-scroll {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 4px;
+    }
+
+    .dialogue-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .dialogue-scroll::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .turn {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      animation: fadeUp 0.2s ease both;
+    }
+
+    .turn-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 0.68rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .turn-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .turn-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .turn-agent {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .turn-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .turn-text {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: #3a3740;
+      font-weight: 300;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px 12px 12px 12px;
+      padding: 10px 14px;
+    }
+
+    .round-divider {
+      text-align: center;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      color: #bbb;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      position: relative;
+      margin: 4px 0;
+      flex-shrink: 0;
+    }
+
+    .round-divider::before,
+    .round-divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .round-divider::before {
+      left: 0;
+    }
+
+    .round-divider::after {
+      right: 0;
+    }
+
+    .dialogue-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 40px 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .dialogue-err {
+      color: var(--coral);
+      font-size: 0.82rem;
+      text-align: center;
+      padding: 30px 0;
+      line-height: 1.8;
+    }
+
+    /* ────────────────────────────────────────
+   RESPONSIVE — tablet ≤ 768px
+──────────────────────────────────────── */
+    @media (max-width: 768px) {
+
+      /* hide desktop divider */
+      .divider {
+        display: none;
+      }
+
+      /* stack panels vertically, show only the active one */
+      .workspace {
+        position: relative;
+      }
+
+      .panel {
+        position: absolute;
+        inset: 0;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+
+      .panel.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(12px);
+      }
+
+      .panel-left,
+      .panel-right {
+        width: 100%;
+        min-width: 0;
+        flex: 1;
+      }
+
+      /* show tab bar */
+      .tab-bar {
+        display: flex;
+      }
+
+      /* hide Dialogue button text on very small screens if needed */
+      .topbar-right {
+        gap: 10px;
+      }
+
+      .nav-link {
+        font-size: 0.72rem;
+      }
+
+      .nav-link-dialogue {
+        padding: 3px 9px;
+      }
+
+      /* tighten topbar */
+      .topbar {
+        padding: 0 16px;
+      }
+
+      /* tighter markdown padding */
+      .md-body {
+        padding: 24px 20px 40px;
+      }
+
+      /* modal full-width on small screens */
+      .modal-bg {
+        padding: 10px;
+        align-items: flex-end;
+      }
+
+      .modal {
+        border-radius: 16px 16px 12px 12px;
+        max-height: 90vh;
+      }
+
+      #modal-dialogue .modal {
+        max-height: 88vh;
+      }
+
+      /* footer shorter */
+      .footer-strip {
+        padding: 5px 16px;
+      }
+
+      .footer-strip .dot-row {
+        display: none;
+      }
+    }
+
+    /* ── extra small ≤ 420px ── */
+    @media (max-width: 420px) {
+      .logo span {
+        display: none;
+      }
+
+      #md-out h1 {
+        font-size: 1.6rem;
+      }
+
+      .modal-title {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<header class="topbar">
-  <div class="topbar-left">
-    <div class="logo"><span>DEMO</span>SciBook</div>
-  </div>
-  <nav class="topbar-right">
-    <button class="nav-link" onclick="openModal('modal-abstract')">Abstract</button>
-    <button class="nav-link" onclick="openModal('modal-authors')">Authors</button>
-    <button class="nav-link nav-link-dialogue" onclick="openDialogue()">Dialogue ↗</button>
-  </nav>
-</header>
-
-<main class="workspace">
-
-  <!-- LEFT: PDF -->
-  <div class="panel panel-left">
-    <div class="panel-header">
-      <span class="panel-label">📄 Full Paper</span>
-      <span class="panel-tag">https://arxiv.org/pdf/2512.10685</span>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo"><span>DEMO</span>SciBook</div>
     </div>
-    <div class="pdf-body">
-      <iframe src="https://arxiv.org/pdf/2512.10685" title="paper.pdf"></iframe>
-    </div>
-  </div>
+    <nav class="topbar-right">
+      <button class="nav-link" onclick="openModal('modal-abstract')">Abstract</button>
+      <button class="nav-link" onclick="openModal('modal-authors')">Authors</button>
+      <button class="nav-link nav-link-dialogue" onclick="openDialogue()">Dialogue ↗</button>
+    </nav>
+  </header>
 
-  <div class="divider" id="divider"></div>
+  <main class="workspace">
 
-  <!-- RIGHT: MARKDOWN -->
-  <div class="panel panel-right">
-    <div class="panel-header">
-      <span class="panel-label">✦ Magazine</span>
-      <span class="panel-tag">assets/result.md</span>
-    </div>
-    <div class="md-body">
-      <div class="loader" id="loader">
-        <div class="loader-ring"></div>
-        <p>Loading result.md…</p>
+    <!-- LEFT: PDF -->
+    <div class="panel panel-left" id="panel-pdf">
+      <div class="panel-header">
+        <span class="panel-label">📄 Full Paper</span>
+        <span class="panel-tag">arxiv.org/pdf/2512.10685</span>
       </div>
-      <div id="md-out"></div>
+      <div class="pdf-body">
+        <iframe src="https://cn.arxiv.org/pdf/2512.10685" title="paper.pdf"></iframe>
+      </div>
+    </div>
+
+    <div class="divider" id="divider"></div>
+
+    <!-- RIGHT: MARKDOWN -->
+    <div class="panel panel-right" id="panel-mag">
+      <div class="panel-header">
+        <span class="panel-label">✦ Magazine</span>
+        <span class="panel-tag">assets/result.md</span>
+      </div>
+      <div class="md-body">
+        <div class="loader" id="loader">
+          <div class="loader-ring"></div>
+          <p>Loading result.md…</p>
+        </div>
+        <div id="md-out"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MOBILE TAB BAR -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-pdf active" onclick="switchTab('pdf')">📄 Paper</button>
+    <button class="tab-mag" onclick="switchTab('mag')">✦ Magazine</button>
+  </div>
+
+  <footer class="footer-strip">
+    <span>Scibook — 2026</span>
+    <div class="dot-row"><i></i><i></i><i></i></div>
+    <span>marked.js · pdf embed</span>
+  </footer>
+
+  <!-- ABSTRACT MODAL -->
+  <div class="modal-bg" id="modal-abstract" onclick="if(event.target===this)closeModal('modal-abstract')">
+    <div class="modal">
+      <div class="modal-top">
+        <div>
+          <div class="modal-top-label">Abstract</div>
+          <div class="modal-title">SciBook: A Multi-Agent Dialogue System for Paper Reading Assistance</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-abstract')">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-abstract-text">
+          学术论文的阅读门槛极高，非专业读者往往难以从中获取有效信息。本文提出
+          <strong>SciBook</strong>——一种基于多智能体对话的论文阅读辅助系统，能够将学术论文自动转化为适合青少年阅读的科普文章。系统以<strong>检索增强生成（RAG）</strong>为基础，确保所有智能体的生成内容始终锚定于原文，从而保证科学准确性。SciBook
+          协调多个角色各异的智能体协同工作，包括<em>撰稿智能体</em>、<em>同行评审智能体</em>与<em>可读性编辑智能体</em>，分别负责内容创作、科学性审查与语言适龄化改写。各智能体在结构化的多轮对话中相互博弈：撰稿智能体生成初稿，评审智能体提出异议，编辑智能体持续优化表达，经过若干轮争执与修订后最终达成共识，输出一篇兼具<strong>科学严谨性</strong>与<strong>青少年可读性</strong>的科普文章。
+        </p>
+      </div>
     </div>
   </div>
 
-</main>
-
-<footer class="footer-strip">
-  <span>Scibook — 2026</span>
-  <div class="dot-row"><i></i><i></i><i></i></div>
-  <span>marked.js · pdf embed</span>
-</footer>
-
-<!-- ABSTRACT MODAL -->
-<div class="modal-bg" id="modal-abstract" onclick="if(event.target===this)closeModal('modal-abstract')">
-  <div class="modal">
-    <div class="modal-top">
-      <div>
-        <div class="modal-top-label">Abstract</div>
-        <div class="modal-title">SciBook: A Multi-Agent Dialogue System for Paper Reading Assistance</div>
+  <!-- AUTHORS MODAL -->
+  <div class="modal-bg" id="modal-authors" onclick="if(event.target===this)closeModal('modal-authors')">
+    <div class="modal">
+      <div class="modal-top">
+        <div>
+          <div class="modal-top-label">Authors</div>
+          <div class="modal-title">Research Team</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-authors')">✕</button>
       </div>
-      <button class="modal-close" onclick="closeModal('modal-abstract')">✕</button>
-    </div>
-    <div class="modal-body">
-      <p class="modal-abstract-text">
-        学术论文的阅读门槛极高，非专业读者往往难以从中获取有效信息。本文提出 <strong>SciBook</strong>——一种基于多智能体对话的论文阅读辅助系统，能够将学术论文自动转化为适合青少年阅读的科普文章。系统以<strong>检索增强生成（RAG）</strong>为基础，确保所有智能体的生成内容始终锚定于原文，从而保证科学准确性。SciBook 协调多个角色各异的智能体协同工作，包括<em>撰稿智能体</em>、<em>同行评审智能体</em>与<em>可读性编辑智能体</em>，分别负责内容创作、科学性审查与语言适龄化改写。各智能体在结构化的多轮对话中相互博弈：撰稿智能体生成初稿，评审智能体提出异议，编辑智能体持续优化表达，经过若干轮争执与修订后最终达成共识，输出一篇兼具<strong>科学严谨性</strong>与<strong>青少年可读性</strong>的科普文章。
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- AUTHORS MODAL -->
-<div class="modal-bg" id="modal-authors" onclick="if(event.target===this)closeModal('modal-authors')">
-  <div class="modal">
-    <div class="modal-top">
-      <div>
-        <div class="modal-top-label">Authors</div>
-        <div class="modal-title">Research Team</div>
-      </div>
-      <button class="modal-close" onclick="closeModal('modal-authors')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="authors-grid">
-        <div class="author-card">
-          <div class="author-avatar" style="background:#c8f13533;">GL</div>
-          <div class="author-info">
-            <div class="author-name">罗及恩</div>
-            <div class="author-affil">CNUHS, 2024 Class 02</div>
+      <div class="modal-body">
+        <div class="authors-grid">
+          <div class="author-card">
+            <div class="author-avatar" style="background:#c8f13533;">GL</div>
+            <div class="author-info">
+              <div class="author-name">罗及恩</div>
+              <div class="author-affil">CNUHS, 2024 Class 02</div>
+            </div>
+            <span class="author-tag">作者</span>
           </div>
-          <span class="author-tag">作者</span>
-        </div>
-        <div class="author-card">
-          <div class="author-avatar" style="background:#ff5c5c33;">LB</div>
-          <div class="author-info">
-            <div class="author-name">李秉蔚</div>
-            <div class="author-affil">CNUHS</div>
+          <div class="author-card">
+            <div class="author-avatar" style="background:#ff5c5c33;">LB</div>
+            <div class="author-info">
+              <div class="author-name">李秉蔚</div>
+              <div class="author-affil">CNUHS</div>
+            </div>
+            <span class="author-tag">指导老师</span>
           </div>
-          <span class="author-tag">指导老师</span>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- DIALOGUE MODAL -->
-<div class="modal-bg" id="modal-dialogue" onclick="if(event.target===this)closeModal('modal-dialogue')">
-  <div class="modal">
-    <div class="modal-top">
-      <div>
-        <div class="modal-top-label">Agent Dialogue</div>
-        <div class="modal-title">智能体对话记录</div>
+  <!-- DIALOGUE MODAL -->
+  <div class="modal-bg" id="modal-dialogue" onclick="if(event.target===this)closeModal('modal-dialogue')">
+    <div class="modal">
+      <div class="modal-top">
+        <div>
+          <div class="modal-top-label">Agent Dialogue</div>
+          <div class="modal-title">智能体对话记录</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-dialogue')">✕</button>
       </div>
-      <button class="modal-close" onclick="closeModal('modal-dialogue')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="dialogue-meta" id="dialogue-meta"></div>
-      <div class="dialogue-scroll" id="dialogue-scroll">
-        <div class="dialogue-loading">
-          <div class="loader-ring" style="width:20px;height:20px;border-width:2px;"></div>
-          加载中…
+      <div class="modal-body">
+        <div class="dialogue-meta" id="dialogue-meta"></div>
+        <div class="dialogue-scroll" id="dialogue-scroll">
+          <div class="dialogue-loading">
+            <div class="loader-ring" style="width:20px;height:20px;border-width:2px;"></div>
+            加载中…
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<script>
-/* ── Modal ── */
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape')
-    document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
-});
+  <script>
+    /* ── Modal ── */
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape')
+        document.querySelectorAll('.modal-bg.open').forEach(m => m.classList.remove('open'));
+    });
 
-/* ── Agent colors ── */
-const PALETTE = [
-  { bg: '#c8f13522', border: '#c8f13577', text: '#4a6e00' },
-  { bg: '#5ce1ff22', border: '#5ce1ff77', text: '#007799' },
-  { bg: '#ff5c5c22', border: '#ff5c5c77', text: '#cc2200' },
-  { bg: '#d4a8ff22', border: '#d4a8ff77', text: '#6600bb' },
-  { bg: '#ffcc5522', border: '#ffcc5577', text: '#886600' },
-];
-const colorMap = {};
-let ci = 0;
-function getColor(name) {
-  if (!colorMap[name]) colorMap[name] = PALETTE[ci++ % PALETTE.length];
-  return colorMap[name];
-}
-function initials(name) {
-  return name.replace(/智能体$/, '').slice(0, 2);
-}
-
-/* ── Dialogue ── */
-let dialogueLoaded = false;
-async function openDialogue() {
-  openModal('modal-dialogue');
-  if (dialogueLoaded) return;
-  const scroll = document.getElementById('dialogue-scroll');
-  const meta   = document.getElementById('dialogue-meta');
-  try {
-    const res = await fetch('assets/conversations.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-
-    // agent pills
-    meta.innerHTML = (data.agents || []).map(a => {
-      const c = getColor(a.name);
-      return `<span class="agent-pill" style="color:${c.text};border-color:${c.border};background:${c.bg}">${a.name} · ${a.role}</span>`;
-    }).join('');
-
-    // turns
-    let lastRound = null;
-    const items = data.turns.map((t, i) => {
-      const c = getColor(t.agent);
-      let html = '';
-      if (t.round != null && t.round !== lastRound) {
-        html += `<div class="round-divider">Round ${t.round}</div>`;
-        lastRound = t.round;
+    /* ── Mobile tab switch ── */
+    let activeTab = 'pdf';
+    function switchTab(tab) {
+      activeTab = tab;
+      const pdf = document.getElementById('panel-pdf');
+      const mag = document.getElementById('panel-mag');
+      const btnPdf = document.querySelector('.tab-pdf');
+      const btnMag = document.querySelector('.tab-mag');
+      if (tab === 'pdf') {
+        pdf.classList.remove('hidden');
+        mag.classList.add('hidden');
+        btnPdf.classList.add('active');
+        btnMag.classList.remove('active');
+      } else {
+        mag.classList.remove('hidden');
+        pdf.classList.add('hidden');
+        btnMag.classList.add('active');
+        btnPdf.classList.remove('active');
       }
-      html += `
+    }
+    // On mobile default: show PDF first
+    function initMobileTabs() {
+      if (window.innerWidth <= 768) {
+        document.getElementById('panel-mag').classList.add('hidden');
+      }
+    }
+    initMobileTabs();
+    window.addEventListener('resize', () => {
+      const pdf = document.getElementById('panel-pdf');
+      const mag = document.getElementById('panel-mag');
+      if (window.innerWidth > 768) {
+        pdf.classList.remove('hidden');
+        mag.classList.remove('hidden');
+      } else {
+        switchTab(activeTab);
+      }
+    });
+
+    /* ── Agent colors ── */
+    const PALETTE = [
+      { bg: '#c8f13522', border: '#c8f13577', text: '#4a6e00' },
+      { bg: '#5ce1ff22', border: '#5ce1ff77', text: '#007799' },
+      { bg: '#ff5c5c22', border: '#ff5c5c77', text: '#cc2200' },
+      { bg: '#d4a8ff22', border: '#d4a8ff77', text: '#6600bb' },
+      { bg: '#ffcc5522', border: '#ffcc5577', text: '#886600' },
+    ];
+    const colorMap = {};
+    let ci = 0;
+    function getColor(name) {
+      if (!colorMap[name]) colorMap[name] = PALETTE[ci++ % PALETTE.length];
+      return colorMap[name];
+    }
+    function initials(name) { return name.replace(/智能体$/, '').slice(0, 2); }
+
+    /* ── Dialogue ── */
+    let dialogueLoaded = false;
+    async function openDialogue() {
+      openModal('modal-dialogue');
+      if (dialogueLoaded) return;
+      const scroll = document.getElementById('dialogue-scroll');
+      const meta = document.getElementById('dialogue-meta');
+      try {
+        const res = await fetch('assets/conversations.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        meta.innerHTML = (data.agents || []).map(a => {
+          const c = getColor(a.name);
+          return `<span class="agent-pill" style="color:${c.text};border-color:${c.border};background:${c.bg}">${a.name} · ${a.role}</span>`;
+        }).join('');
+        let lastRound = null;
+        scroll.innerHTML = data.turns.map((t, i) => {
+          const c = getColor(t.agent);
+          let html = '';
+          if (t.round != null && t.round !== lastRound) {
+            html += `<div class="round-divider">Round ${t.round}</div>`;
+            lastRound = t.round;
+          }
+          html += `
         <div class="turn" style="animation-delay:${i * 0.035}s">
           <div class="turn-avatar" style="background:${c.bg};border:1.5px solid ${c.border};color:${c.text}">${initials(t.agent)}</div>
           <div class="turn-body">
@@ -854,27 +1265,26 @@ async function openDialogue() {
             <div class="turn-text">${marked.parse(t.text)}</div>
           </div>
         </div>`;
-      return html;
-    }).join('');
-    scroll.innerHTML = items;
-    dialogueLoaded = true;
-  } catch(e) {
-    scroll.innerHTML = `<div class="dialogue-err">无法加载 assets/conversations.json<br><small style="color:#aaa">${e.message}</small></div>`;
-  }
-}
+          return html;
+        }).join('');
+        dialogueLoaded = true;
+      } catch (e) {
+        scroll.innerHTML = `<div class="dialogue-err">无法加载 assets/conversations.json<br><small style="color:#aaa">${e.message}</small></div>`;
+      }
+    }
 
-/* ── Load Markdown ── */
-(async () => {
-  const loader = document.getElementById('loader');
-  const out    = document.getElementById('md-out');
-  try {
-    const res = await fetch('assets/result.md');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    loader.style.display = 'none';
-    out.innerHTML = marked.parse(text);
-  } catch (e) {
-    loader.innerHTML = `
+    /* ── Load Markdown ── */
+    (async () => {
+      const loader = document.getElementById('loader');
+      const out = document.getElementById('md-out');
+      try {
+        const res = await fetch('assets/result.md');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        loader.style.display = 'none';
+        out.innerHTML = marked.parse(text);
+      } catch (e) {
+        loader.innerHTML = `
       <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" stroke-width="1.5">
         <circle cx="12" cy="12" r="10"/>
         <line x1="12" y1="8" x2="12" y2="12"/>
@@ -882,35 +1292,35 @@ async function openDialogue() {
       </svg>
       <p style="color:#ff5c5c;margin-top:4px">无法加载 assets/result.md</p>
       <p style="color:#aaa;font-size:0.72rem">${e.message}</p>`;
-  }
-})();
+      }
+    })();
 
-/* ── Drag resize ── */
-const divider = document.getElementById('divider');
-const left    = document.querySelector('.panel-left');
-const ws      = document.querySelector('.workspace');
-let drag = false, sx = 0, sw = 0;
-
-divider.addEventListener('mousedown', e => {
-  drag = true; sx = e.clientX;
-  sw = left.getBoundingClientRect().width;
-  divider.classList.add('active');
-  document.body.style.userSelect = 'none';
-  document.body.style.cursor = 'col-resize';
-});
-document.addEventListener('mousemove', e => {
-  if (!drag) return;
-  const total = ws.getBoundingClientRect().width;
-  const nw = Math.min(Math.max(sw + e.clientX - sx, 240), total - 244);
-  left.style.width = nw + 'px';
-});
-document.addEventListener('mouseup', () => {
-  if (!drag) return;
-  drag = false;
-  divider.classList.remove('active');
-  document.body.style.userSelect = '';
-  document.body.style.cursor = '';
-});
-</script>
+    /* ── Drag resize (desktop only) ── */
+    const divider = document.getElementById('divider');
+    const left = document.querySelector('.panel-left');
+    const ws = document.querySelector('.workspace');
+    let drag = false, sx = 0, sw = 0;
+    divider.addEventListener('mousedown', e => {
+      drag = true; sx = e.clientX;
+      sw = left.getBoundingClientRect().width;
+      divider.classList.add('active');
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = 'col-resize';
+    });
+    document.addEventListener('mousemove', e => {
+      if (!drag) return;
+      const total = ws.getBoundingClientRect().width;
+      const nw = Math.min(Math.max(sw + e.clientX - sx, 240), total - 244);
+      left.style.width = nw + 'px';
+    });
+    document.addEventListener('mouseup', () => {
+      if (!drag) return;
+      drag = false;
+      divider.classList.remove('active');
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
+    });
+  </script>
 </body>
+
 </html>

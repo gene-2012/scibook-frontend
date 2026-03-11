@@ -202,9 +202,10 @@ body {
 /* ── PDF ── */
 .pdf-body {
     flex: 1;
-    overflow: hidden;
     background: #2a2a2a;
     position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .pdf-body::before {
@@ -217,6 +218,20 @@ body {
     background: linear-gradient(to bottom, #1a1a1a55, transparent);
     z-index: 2;
     pointer-events: none;
+}
+
+.pdf-body img {
+    width: 95%;
+    display: block;
+    margin: 10px auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+}
+
+.pdf-body img.loaded {
+    opacity: 1;
 }
 
 iframe {

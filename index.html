@@ -34,9 +34,10 @@
         <span class="panel-label">📄 Full Paper</span>
         <span class="panel-tag">arxiv.org/pdf/2512.10685</span>
       </div>
-      <div class="pdf-body">
-        <object data="https://cn.arxiv.org/pdf/2512.10685" type="application/pdf" width="100%" height="100%">
-          <p>您的浏览器不支持预览，请 <a href="https://cn.arxiv.org/pdf/2512.10685">点击此处下载 PDF</a>。</p>
+      <div class="pdf-body" id="pdf-container">
+        <object data="https://cn.sarxiv.org/pdf/2512.10685" type="application/pdf" width="100%" height="100%" onerror="draw_pngs()">
+          <!-- Load PNG if pdf isn't ready -->
+          <p style="color: var(--paper)"> 由于浏览器不兼容，我们只能向您展示前 10 页内容 。<a href="https://cn.arxiv.org/pdf/2512.10685">【完整内容】</a> 
         </object>
       </div>
     </div>
@@ -299,13 +300,24 @@
       document.body.style.userSelect = '';
       document.body.style.cursor = '';
     });
+
+    function draw_pngs() {
+      const container = document.getElementById('pdf-container'); // 或者你的 pdf 容器
+      for (let i = 1; i <= 10; i++) {
+        const img = new Image();
+        img.src = `assets/paper_snapshot/shotsshot${i}.png`;
+        img.onload = () => img.classList.add('loaded'); // 加载完再显示
+        img.loading = "lazy"; // 救命的延迟加载
+        container.appendChild(img);
+      }
+    }
   </script>
   <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "vt3v50xev9");
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "vt3v50xev9");
   </script>
 </body>
 

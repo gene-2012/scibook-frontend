@@ -8,3 +8,12 @@ body {
 <h1> 您当前正在使用【微信】访问，请用浏览器打开 </h1>
 <hr />
 <p> Please open this page in browser. </p>
+<script>
+(function() {
+  var ua = navigator.userAgent.toLowerCase();
+  var isWeChat = /micromessenger/.test(ua);
+  if (!isWeChat) {
+    window.location.href="/";
+  }
+})();
+</script> 
